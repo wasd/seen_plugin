@@ -98,7 +98,7 @@ class LastSeen:
 			msg(groupchat, MSG_KEINE_WORT_GIBEN)
 			return
 		suche = (parameters.split())[0].strip()
-		antwort = self.__get_seen(self.find(suche))
+		antwort = querast+': '+self.__get_seen(self.find(suche))
 		msg(groupchat, antwort)
 
 seen = LastSeen(SEEN_FILENAME)
