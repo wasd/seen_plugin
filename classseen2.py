@@ -87,6 +87,11 @@ class LastSeen:
 			result += MSG_SAH_BEITRETEN % (latest, self.__get_date(latest).isoformat(' '))
 		if self.__get_flag(latest) == seen_leave:
 			result += MSG_SAH_VERLASSEN % (latest, self.__get_date(latest).isoformat(' '))
+		who = get_who(groupchat)
+		if who.has_key(latest):
+			result += ' %s ist noch hier' % latest
+		if GROUPCHATS[groupchat].has_key(latest):
+			result += ' %s ist noch da' % latest
 		return result
 
 	def show(self, type, source, parameters):
@@ -106,3 +111,6 @@ seen = LastSeen(SEEN_FILENAME)
 register_command_handler(seen.show,u'!sah',0,u'sah',u'!sah',[u'!sah'])
 register_leave_handler(seen.add_leave)
 register_join_handler(seen.add_join)
+
+#mynick = get_nick(groupchat)
+
