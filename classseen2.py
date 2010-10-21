@@ -10,8 +10,8 @@ import threading
 MSG_KEINE_FINDET = "Ich habe niemanden gesehen."
 MSG_ETWAS_FINDET = "Ich fand %d, hier sie (sortiert): "
 MSG_MEHR_FINDET = "Ich fand %d, hier %d letzten (sortiert): "
-MSG_SAH_BEITRETEN = "%s hat hereinkommt %s"
-MSG_SAH_FERLASSEN = "%s hat verlasse uns %s"
+MSG_SAH_BEITRETEN = "%s hat hereinkommt %s."
+MSG_SAH_FERLASSEN = "%s hat verlasse uns %s."
 MSG_KEINE_WORT_GIBEN = "Der kwaken der boloten der schloep der schloep der schloep."
 
 maxfind = 5
@@ -21,32 +21,32 @@ seen_join='J'
 seen_leave='L'
 
 class LastSeen:
-	__lock = threading.Lock()
 	def __init__ (self, filename):
+		self._lock = threading.Lock()
 		self.seen_dict = {}
 		self.seen_list = []
 		self.seen_filename = filename
-		self.__readfile()
+		self._readfile()
 
 	def add_join(self, groupchat, nick):
-		self.__add(nick, seen_join)
+		self._add(nick, seen_join)
 
 	def add_leave(self, groupchat, nick):
-		self.__add(nick, seen_leave)
+		self._add(nick, seen_leave)
 	
-	def __add(self, nick, flag):
-		with self.__lock:
+	def _add(self, nick, flag):
+		with self._lock:
 			self.seen_dict[nick] = {'date': datetime.now(), 'flag': flag}
 			while self.seen_list.count(nick):
 				self.seen_list.remove(nick)
 			self.seen_list.insert(0, nick)
-			self.__writefile()
+			self._writefile()
 
-	def __writefile(self):
+	def _writefile(self):
 		with open(self.seen_filename, 'wb') as fp:
 			pickle.dump((self.seen_dict, self.seen_list), fp)
 
-	def __readfile(self):
+	def _readfile(self):
 		try:
 			with open(self.seen_filename, 'rb') as fp:
 				try:
@@ -57,22 +57,26 @@ class LastSeen:
 		except:
 			pass
 
-	def find(self, such):
-		found = []
-		if such.endswith('*'):
-			such = such[:-1]
-			found = [nick for nick in self.seen_list if nick.startswith(such)]
-		elif self.seen_list.count(such):
-			found = [such]
-		return found
+	def find(self, such, mode='wild'):
+		findet = []
+		if mode == 'wild':
+			if such.endswith('*'):
+				such = such[:-1]
+				findet = [nick for nick in self.seen_list if nick.startswith(such)]
+			elif self.seen_list.count(such):
+				findet = [such]
+		elif mode == 're':
+			expr = re.compile(such, re.IGNORECASE|re.UNICODE)
+			findet = [nick for nick in self.seen_list if expr.match(nick)]
+		return findet
 
-	def __get_flag(self, nick):
+	def _get_flag(self, nick):
 		return self.seen_dict[nick]['flag']
 
-	def __get_date(self, nick):
+	def _get_date(self, nick):
 		return self.seen_dict[nick]['date']
 
-	def __get_seen(self, found):
+	def _get_seen(self, found, groupchat):
 		result = ''
 		count = len(found)
 		if count == 0:
@@ -83,15 +87,18 @@ class LastSeen:
 		elif count > 1:
 			result += MSG_ETWAS_FINDET % (count) + nicks + '. '
 		latest = found[0]
-		if self.__get_flag(latest) == seen_join:
-			result += MSG_SAH_BEITRETEN % (latest, self.__get_date(latest).isoformat(' '))
-		if self.__get_flag(latest) == seen_leave:
-			result += MSG_SAH_VERLASSEN % (latest, self.__get_date(latest).isoformat(' '))
-		who = get_who(groupchat)
-		if who.has_key(latest):
-			result += ' %s ist noch hier' % latest
+		if self._get_flag(latest) == seen_join:
+			result += MSG_SAH_BEITRETEN % (latest, self._get_date(latest).isoformat(' '))
+		if self._get_flag(latest) == seen_leave:
+			result += MSG_SAH_VERLASSEN % (latest, self._get_date(latest).isoformat(' '))
+		# bug here
+#		who = get_who(groupchat)
+#		if who:
+#			if who.has_key(latest):
+#				result += ' %s ist noch hier' % latest
+		# this is ugly hack proposed by bot code itself
 		if GROUPCHATS[groupchat].has_key(latest):
-			result += ' %s ist noch da' % latest
+			result += ' %s ist noch da.' % latest
 		return result
 
 	def show(self, type, source, parameters):
@@ -103,12 +110,25 @@ class LastSeen:
 			msg(groupchat, MSG_KEINE_WORT_GIBEN)
 			return
 		suche = (parameters.split())[0].strip()
-		antwort = querast+': '+self.__get_seen(self.find(suche))
+		antwort = querast+': '+self._get_seen(self.find(suche), groupchat)
+		msg(groupchat, antwort)
+
+	def show_re(self, type, source, parameters):
+		groupchat = get_groupchat(source)
+		querast = source[2]
+		if not groupchat:
+			return
+		if not parameters:
+			msg(groupchat, MSG_KEINE_WORT_GIBEN)
+			return
+		suche = (parameters.split())[0].strip()
+		antwort = querast+': '+self._get_seen(self.find(suche, 're'), groupchat)
 		msg(groupchat, antwort)
 
 seen = LastSeen(SEEN_FILENAME)
 
 register_command_handler(seen.show,u'!sah',0,u'sah',u'!sah',[u'!sah'])
+register_command_handler(seen.show_re,u'!sahr',0,u'sahr',u'!sahr',[u'!sahr'])
 register_leave_handler(seen.add_leave)
 register_join_handler(seen.add_join)
 
