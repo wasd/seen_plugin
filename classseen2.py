@@ -88,9 +88,9 @@ class LastSeen:
 			result += MSG_ETWAS_FINDET % (count) + nicks + '. '
 		latest = found[0]
 		if self._get_flag(latest) == seen_join:
-			result += MSG_SAH_BEITRETEN % (latest, self._get_date(latest).isoformat(' '))
+			result += MSG_SAH_BEITRETEN % (latest.encode("utf-8"), self._get_date(latest).isoformat(' ').encode("utf-8"))
 		if self._get_flag(latest) == seen_leave:
-			result += MSG_SAH_VERLASSEN % (latest, self._get_date(latest).isoformat(' '))
+			result += MSG_SAH_VERLASSEN % (latest.encode("utf-8"), self._get_date(latest).isoformat(' ').encode("utf-8"))
 		# bug here
 #		who = get_who(groupchat)
 #		if who:
@@ -98,7 +98,7 @@ class LastSeen:
 #				result += ' %s ist noch hier' % latest
 		# this is ugly hack proposed by bot code itself
 		if GROUPCHATS[groupchat].has_key(latest):
-			result += ' %s всё ещё здесь!' % latest
+			result += ' %s всё ещё здесь!' % latest.encode("utf-8")
 		return result
 
 	def show(self, type, source, parameters):
