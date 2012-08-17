@@ -7,12 +7,12 @@ import pickle
 import os
 import threading
 
-MSG_KEINE_FINDET = "Ich habe niemanden gesehen."
-MSG_ETWAS_FINDET = "Ich fand %d, hier sie (sortiert): "
-MSG_MEHR_FINDET = "Ich fand %d, hier %d letzten (sortiert): "
-MSG_SAH_BEITRETEN = "%s hat hereinkommt %s."
-MSG_SAH_FERLASSEN = "%s hat verlasse uns %s."
-MSG_KEINE_WORT_GIBEN = "Der kwaken der boloten der schloep der schloep der schloep."
+MSG_KEINE_FINDET = "Не видел никого."
+MSG_ETWAS_FINDET = "Нашёл %d, вот они (отсортированные): "
+MSG_MEHR_FINDET = "Нашёл %d, вот %d крайних (по алфавиту (или как-то ещё)): "
+MSG_SAH_BEITRETEN = "%s заходил %s."
+MSG_SAH_FERLASSEN = "%s ушёл %s."
+MSG_KEINE_WORT_GIBEN = "Вы ничего не докажете!"
 
 maxfind = 5
 SEEN_FILENAME = 'static/seen.txt'
