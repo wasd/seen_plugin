@@ -127,8 +127,9 @@ class LastSeen:
 
 seen = LastSeen(SEEN_FILENAME)
 
-register_command_handler(seen.show,u'!sah',0,u'sah',u'!sah',[u'!sah'])
-register_command_handler(seen.show_re,u'!sahr',0,u'sahr',u'!sahr',[u'!sahr'])
+register_command_handler(seen.show,u'!seen',0,u'seen',u'!seen',[u'!seen'])
+register_command_handler(seen.show,u'!где',0,u'где',u'!где',[u'!где'])
+register_command_handler(seen.show_re,u'!seenr',0,u'seenr',u'!seenr',[u'!seenr'])
 register_leave_handler(seen.add_leave)
 register_join_handler(seen.add_join)
 
