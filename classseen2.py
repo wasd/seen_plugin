@@ -10,7 +10,7 @@ import threading
 MSG_KEINE_FINDET = "Не видел никого."
 MSG_ETWAS_FINDET = "Нашёл %d, вот они (отсортированные): "
 MSG_MEHR_FINDET = "Нашёл %d, вот %d крайних (по алфавиту (или как-то ещё)): "
-MSG_SAH_BEITRETEN = "%s заходил %s."
+MSG_SAH_BEITRETEN = "%s зашёл %s. И всё ещё здесь!"
 MSG_SAH_FERLASSEN = "%s ушёл %s."
 MSG_KEINE_WORT_GIBEN = "Вы ничего не докажете!"
 
